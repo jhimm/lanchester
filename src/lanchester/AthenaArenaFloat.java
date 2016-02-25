@@ -36,6 +36,9 @@ public class AthenaArenaFloat {
     public ArrayList<TimeStep> getHistory() {
         return this.history;
     }
+    public ArrayList<DTimeStep> getDHistory() {
+        return this.dHistory;
+    }
 
     public ArrayList<String> getHistoryCSV() {
         String tmpS = "Time Step," + f1.getName() + "'" + f2.getName();

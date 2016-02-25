@@ -31,4 +31,20 @@ public class MultiTimeStep {
       }
       return tmpS;
   }
+  public String getCSVString(){
+      String tmpS=""+this.time;
+      for(int i1=0;i1<this.numList.length;i1++){
+          tmpS+=","+this.numList[i1];
+      }
+      return tmpS;
+  }
+  public double[] getValues(){
+      int num = 1+numList.length;
+      double[] ret = new double[num];
+      ret[0]=this.time;
+      for(int i1=0;i1<num-1;i1++){
+          ret[i1+1]=this.numList[i1];
+      }
+      return ret;
+  }
 }

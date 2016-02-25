@@ -88,4 +88,8 @@ public class AthenaForce {
         tmpS+="\n DW ratio = "+getDefendWithdrawRatio();
         return tmpS;
     }
+    public void updateForce(double f){
+        this.previousForceSize=this.forceSize;
+        this.forceSize=f;
+    }
 }
