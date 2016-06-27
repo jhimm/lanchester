@@ -53,6 +53,7 @@ public class AthenaConstants {
     public static final String URBAN = "URBAN";
     public static final String CIVILIAN_CONCERN = "CIVILIAN_CONCERN";
     public static final String FORCE_TYPE = "FORCE_TYPE";
+     public static final String INTEL = "INTEL";
     public static double[][] skirmish = new double[4][4];
     public static double[][] battle = new double[4][4];
 

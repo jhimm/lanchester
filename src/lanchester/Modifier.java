@@ -23,18 +23,21 @@ public class Modifier {
         this.multMap.put(AthenaConstants.FORCE_TYPE, 1.);
         this.multMap.put(AthenaConstants.TRAINING, 1.);
         this.multMap.put(AthenaConstants.URBAN, 1.);
+        this.multMap.put(AthenaConstants.INTEL, 1.);
+    }
 
+    public void setMultplier(String k, double v) {
+        this.multMap.put(k, v);
     }
-    public void setMultplier(String k,double v){
-        this.multMap.put(k,v);
-    }
-    public double getMultiplier(String k){
+
+    public double getMultiplier(String k) {
         return this.multMap.get(k);
     }
-    public double getTotalMultiplier(){
+
+    public double getTotalMultiplier() {
         double res = 1.;
-        for(String k:this.multMap.keySet()){
-            res*=this.multMap.get(k);
+        for (String k : this.multMap.keySet()) {
+            res *= this.multMap.get(k);
         }
         return res;
     }

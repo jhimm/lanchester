@@ -14,23 +14,25 @@ import org.apache.commons.math3.linear.*;
  *
  * @author Jeff
  */
-public class MultiArena {
+public class MultiArena2 {
 
-    public MultiForce f1 = null;
-    public MultiForce f2 = null;
-    public double currentTime = 0;
+    public AthenaForce f1 = null;
+    public AthenaForce f2 = null;
+    public double currentTime = 0.;
     public double maxTime = 10000.;
     public ArrayList<MultiTimeStep> history = new ArrayList();
     public ArrayList<DTimeStep> dHistory = new ArrayList();
     public ArrayList<AthenaForce> forces = new ArrayList();
     public boolean isBattle = true;
-    public double timeStep = 0.001;
+    public double timeStep = 0.1;
     public HashMap<AthenaForce, Integer> forceMap = new HashMap();
     public boolean[][] isMyTurn = null;
     public int[][] stanceArray = null;
-    public double[][] currentFloor=null;
+    public double[][] currentFloor = null;
+    public double lb = 1.e-2;
+    public boolean loneSurvivor = false;
 
-    public MultiArena() {
+    public MultiArena2() {
         AthenaConstants.fillArrays();
     }
 
@@ -77,6 +79,8 @@ public class MultiArena {
     }
 
     public void step() {
+        boolean aboveFloor = true;
+        double currentCycle = 0.;
         int numFoes = forces.size();
         if (isMyTurn == null) {
             isMyTurn = new boolean[numFoes][numFoes];
@@ -89,10 +93,10 @@ public class MultiArena {
                     isMyTurn[i1][i2] = true;
                     if (i1 == i2) {
                         stanceArray[i1][i2] = AthenaConstants.ALLIED_POSTURE;
-                        currentFloor[i1][i2]=0.;
+                        currentFloor[i1][i2] = 0.;
                     } else {
                         stanceArray[i1][i2] = initializeStance(forces.get(i1), forces.get(i2));
-                        setFloor(i1,i2);
+                        setFloor(i1, i2);
                     }
                 }
             }
@@ -106,9 +110,9 @@ public class MultiArena {
 //        }
         if (eigen.hasComplexEigenvalues()) {
             System.out.println("Complex eigenvalues");
-            for(int i1=0;i1<forces.size();i1++){
+            for (int i1 = 0; i1 < forces.size(); i1++) {
                 AthenaForce f = forces.get(i1);
-                System.out.println(f.getName()+" has "+f.getForceSize()+ " forces remaining");
+                System.out.println(f.getName() + " has " + f.getForceSize() + " forces remaining");
             }
         }
         double[] initialNums = getInitialNumbers(forces);
@@ -123,26 +127,81 @@ public class MultiArena {
             double tmpDet = tmpLU.getDeterminant();
             coeffs[i1] = tmpDet / det2;
         }
-        MultiTimeStep currentStep = new MultiTimeStep(numFoes);
-        currentTime += timeStep;
-        currentStep.setTime(currentTime);
-        for (int i1 = 0; i1 < numFoes; i1++) {
-            double updatedForce = 0.;
-            for (int i2 = 0; i2 < numFoes; i2++) {
-                updatedForce += coeffs[i2] * eVectors.getEntry(i1, i2) * Math.exp(eVals[i2] * timeStep);
+        aboveFloor = true;
+        int cntr = 0;
+        int numGone;
+        do {
+            MultiTimeStep currentStep = new MultiTimeStep(numFoes);
+            currentTime += timeStep;
+            currentCycle += timeStep;
+            currentStep.setTime(currentTime);
+            numGone = 0;
+            for (int i1 = 0; i1 < numFoes; i1++) {
+                double updatedForce = 0.;
+                if (forces.get(i1).getForceSize() > lb) {
+                    for (int i2 = 0; i2 < numFoes; i2++) {
+//                    updatedForce += coeffs[i2] * eVectors.getEntry(i1, i2) * Math.exp(eVals[i2] * timeStep);
+                        updatedForce += coeffs[i2] * eVectors.getEntry(i1, i2) * Math.exp(eVals[i2] * currentCycle);
+                        if (updatedForce < 1.) {
+                            updatedForce = 0.;
+                            numGone++;
+                        }
 //                updatedForce+=coeffs[i2]*eVectors.getEntry(i2, i1)*Math.exp(eVals[i2]*timeStep);
 //                updatedForce+=coeffs[i1]*eVectors.getEntry(i2, i1)*Math.exp(eVals[i1]*timeStep);
+                    }
+                } else {
+                    updatedForce = lb / 2.;
+                    numGone++;
+                }
+                forces.get(i1).updateForce(updatedForce);
+                currentStep.setForceNumber(updatedForce, i1);
             }
-            forces.get(i1).updateForce(updatedForce);
-            currentStep.setForceNumber(updatedForce, i1);
+            history.add(currentStep);
+            aboveFloor = checkAboveFloors();
+            cntr++;
+        } while (aboveFloor && cntr < 2000 && (numFoes - numGone) > 1);
+        for (int i1 = 0; i1 < numFoes; i1++) {
+            for (int i2 = 0; i2 < numFoes; i2++) {
+                if (i1 == i2) {
+                    stanceArray[i1][i2] = AthenaConstants.ALLIED_POSTURE;
+                    currentFloor[i1][i2] = 0.;
+                } else {
+                    stanceArray[i1][i2] = initializeStance(forces.get(i1), forces.get(i2));
+                    setFloor(i1, i2);
+                }
+            }
         }
-        history.add(currentStep);
+        
 //        eVectors.
 //        this.currentTime++;
 //                Truncator truncator = new Truncator();
-        if (true) {
+        if (numFoes-numGone == 1) {
+            loneSurvivor=true;
 //            System.out.println("time = " + time);
         }
+    }
+    public void setLoneSurvivor(boolean ls){
+        this.loneSurvivor=ls;
+    }
+    public boolean getLoneSurvivor(){
+        return this.loneSurvivor;
+    }
+
+    public boolean checkAboveFloors() {
+        boolean ret = true;
+        for (int i1 = 0; i1 < forces.size(); i1++) {
+            AthenaForce f1 = forces.get(i1);
+            for (int i2 = 0; i2 < forces.size(); i2++) {
+                AthenaForce f2 = forces.get(i2);
+                double rat = f1.getForceSize() / f2.getForceSize();
+                if (rat <= currentFloor[i1][i2]) {
+                    ret = false;
+                    System.out.println(" fell through floor - " + i1 + " vs " + i2 + " with force size = " + f1.getForceSize());
+
+                }
+            }
+        }
+        return ret;
     }
 
     public double getX(double t, double c11, double c22, double rAA, double rBB) {
@@ -209,31 +268,31 @@ public class MultiArena {
         int ind1 = forceMap.get(f1);
         int ind2 = forceMap.get(f2);
         boolean changed = false;
-        if (isMyTurn[ind1][ind2]) {
-            changed = checkForce(f1, ratio1to2);
-            if (changed) {
-                toggle(ind1, ind2);
-                return;
-            }
-        }
+//        if (isMyTurn[ind1][ind2]) {
+        changed = checkForce(f1, ratio1to2);
+//            if (changed) {
+//                toggle(ind1, ind2);
+//                return;
+//            }
+//        }
 
         double ratio2to1 = currentF2 / currentF1;
-        changed = false;
-        if (isMyTurn[ind2][ind1]) {
-            changed = checkForce(f2, ratio2to1);
-            if (changed) {
-                toggle(ind2, ind1);
-                return;
-            }
-        }
+//        changed = false;
+//        if (isMyTurn[ind2][ind1]) {
+        changed = checkForce(f2, ratio2to1);
+//            if (changed) {
+//                toggle(ind2, ind1);
+//                return;
+//            }
+//        }
     }
 
     public int initializeStance(AthenaForce f1, AthenaForce f2) {
         double currentF1 = f1.getForceSize();
         double currentF2 = f2.getForceSize();
         double ratio1to2 = currentF1 / currentF2;
-        int ind1 = forceMap.get(f1);
-        int ind2 = forceMap.get(f2);
+//        int ind1 = forceMap.get(f1);
+//        int ind2 = forceMap.get(f2);
         return findStance(f1, ratio1to2);
 
     }
@@ -248,16 +307,17 @@ public class MultiArena {
         }
 
     }
-    public void setFloor(int i,int j){
+
+    public void setFloor(int i, int j) {
         AthenaForce f = forces.get(i);
-        if(stanceArray[i][j]==AthenaConstants.ATTACK_POSTURE){
-            currentFloor[i][j]=f.attackDefendRatio;
-        }else if(stanceArray[i][j]==AthenaConstants.DEFEND_POSTURE){
-            currentFloor[i][j]=f.defendWithdrawRatio;
-        }else if(stanceArray[i][j]==AthenaConstants.WITHDRAW_POSTURE){
-            currentFloor[i][j]=0.;
+        if (stanceArray[i][j] == AthenaConstants.ATTACK_POSTURE) {
+            currentFloor[i][j] = f.attackDefendRatio;
+        } else if (stanceArray[i][j] == AthenaConstants.DEFEND_POSTURE) {
+            currentFloor[i][j] = f.defendWithdrawRatio;
+        } else if (stanceArray[i][j] == AthenaConstants.WITHDRAW_POSTURE) {
+            currentFloor[i][j] = 0.;
         }
-        
+
     }
 //
 

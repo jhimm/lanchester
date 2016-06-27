@@ -52,6 +52,18 @@ public class AthenaArenaFloat {
         }
         return tmpList;
     }
+    public ArrayList<String> getDHistoryCSV() {
+        String tmpS = "Time Step," + f1.getName() + "'" + f2.getName();
+        ArrayList<String> tmpList = new ArrayList();
+        tmpList.add(tmpS);
+        DTimeStep tmpH;
+        for (int i1 = 0; i1 < dHistory.size(); i1++) {
+            tmpH = dHistory.get(i1);
+            tmpS = tmpH.timeStep + "," + tmpH.f1Number + "," + tmpH.f2Number;
+            tmpList.add(tmpS);
+        }
+        return tmpList;
+    }
 
     public void step() {
 //        this.currentTime++;
@@ -113,7 +125,7 @@ public class AthenaArenaFloat {
 //        }
         float nextD1 = getX(time, c1, c2, rootA, rootB);
         float nextD2 = getY(time, c1, c2, rootA, rootB);
-        System.out.println("time = "+time+"  C1 = "+c1+"  C2 = "+c2+" nextD1 = "+nextD1+" nextD2 = "+nextD2);
+//        System.out.println("time = "+time+"  C1 = "+c1+"  C2 = "+c2+" nextD1 = "+nextD1+" nextD2 = "+nextD2);
         int nextN1 = (int) (0.5f + nextD1);
         if (nextN1 < 1) {
             nextN1 = 0;
