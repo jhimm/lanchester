@@ -104,7 +104,7 @@ public class MultiArenaEntry {
 //            arena5.addForce(green);
 //            arena5.addForce(blue2);
 //            arena5.addForce(red2);
-            for (int i1 = 0; i1 < 2000; i1++) {
+            for (int i1 = 0; i1 < 20000; i1++) {
                 if (!arena3.getLoneSurvivor()) {
                     arena3.step();
                 }
@@ -143,7 +143,7 @@ public class MultiArenaEntry {
 //        int n5=hist5.size();
 //        int histSize = Math.max(n3,n4);
 //        histSize = Math.max(histSize,n5);
-        for (int i1 = 0; i1 < 100; i1++) {
+        for (int i1 = 0; i1 < 10000; i1++) {
             if (i1 < n3) {
                 System.out.println("Arena 3 - " + hist.get(i1));
             }
@@ -231,7 +231,7 @@ public class MultiArenaEntry {
 //            arena5.addForce(green);
 //            arena5.addForce(blue2);
 //            arena5.addForce(red2);
-            for (int i1 = 0; i1 < 200; i1++) {
+            for (int i1 = 0; i1 < 2000; i1++) {
                 if (!arena4.getLoneSurvivor()) {
                     arena4.step();
                 }
@@ -244,7 +244,7 @@ public class MultiArenaEntry {
             }
                 ArrayList<String> hist4 = arena4.getHistoryCSV();
                 histSize=hist4.size();
-        for (int i1 = 0; i1 < 100; i1++) {
+        for (int i1 = 0; i1 < 1000; i1++) {
 //            if (i1 < n3) {
                 System.out.println("Arena 4 - " + hist4.get(i1));
 //            }
