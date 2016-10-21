@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net2;
+package loaders;
 import java.util.ArrayList;
+import net2.N2ForceUnit;
+import net2.N2LinkData;
+import net2.N2Node;
 
 /**
  *

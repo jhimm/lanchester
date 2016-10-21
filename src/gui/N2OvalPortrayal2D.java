@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net2;
+package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import net2.N2Constants;
+import net2.N2Node;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.simple.OvalPortrayal2D;
 

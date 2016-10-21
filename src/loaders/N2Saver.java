@@ -6,9 +6,7 @@
 package loaders;
 
 import Utils.IOUtils;
-import net2.N2ConfigData;
 import com.cedarsoftware.util.io.*;
-import net2.N2DataSet;
 import net2.N2Nodes;
 import net2.N2Node;
 import net2.N2ForceUnit;

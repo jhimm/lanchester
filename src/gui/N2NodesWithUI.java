@@ -2,11 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net2;
+package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
+import net2.N2Nodes;
 import sim.display.Console;
 import sim.display.Controller;
 import sim.display.GUIState;

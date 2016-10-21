@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net2;
+package gui;
 
+import gui.N2OvalPortrayal2D;
 import sim.portrayal.simple.FacetedPortrayal2D;
 import sim.portrayal.SimplePortrayal2D;
 import java.awt.*;
+import net2.N2ForceUnit;
 import sim.display.*;
 import sim.util.*;
 import sim.portrayal.simple.OvalPortrayal2D;

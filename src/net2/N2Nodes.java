@@ -5,6 +5,7 @@
  */
 package net2;
 
+import loaders.N2DataSet;
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.field.network.Edge;

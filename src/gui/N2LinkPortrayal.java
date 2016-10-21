@@ -2,13 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net2;
+package gui;
 
 import sim.portrayal.network.SimpleEdgePortrayal2D;
 import sim.portrayal.DrawInfo2D;
 import sim.field.network.Edge;
 import java.awt.Color;
 import java.io.Serializable;
+import net2.N2Constants;
+import net2.N2Node;
 
 /**
  *
